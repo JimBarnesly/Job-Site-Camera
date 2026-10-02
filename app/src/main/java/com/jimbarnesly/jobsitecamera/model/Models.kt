@@ -17,4 +17,14 @@ enum class WorkCategory(val label: String) {
     OTHER("Other")
 }
 
-data class WorkPhoto(val path: String, val projectId: String, val capturedAt: Long, val category: WorkCategory = WorkCategory.OTHER, val note: String = "")
+data class WorkPhoto(
+    val path: String,
+    val projectId: String,
+    val capturedAt: Long,
+    val category: WorkCategory = WorkCategory.OTHER,
+    val latitude: Double? = null,
+    val longitude: Double? = null,
+    val asset: String = "",
+    val note: String = "",
+    val evidenceMode: Boolean = false
+)
