@@ -50,6 +50,7 @@ private fun ProjectPicker(onOpen: (String) -> Unit) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CameraScreen(project: String, onBack: () -> Unit) {
     val context = LocalContext.current
