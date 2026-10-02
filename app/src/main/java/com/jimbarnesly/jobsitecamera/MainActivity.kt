@@ -56,9 +56,45 @@ private fun CameraScreen(project: String, onBack: () -> Unit) {
     val storage = remember { WorkPhotoStorage(context) }
     var imageCapture by remember { mutableStateOf<ImageCapture?>(null) }
     var lastSaved by remember { mutableStateOf<String?>(null) }
+    var evidenceMode by remember { mutableStateOf(true) }
+    var asset by remember { mutableStateOf("") }
+    var note by remember { mutableStateOf("") }
 
     Column(Modifier.fillMaxSize()) {
         TopAppBar(title = { Text("Current Project") }, navigationIcon = { TextButton(onClick = onBack) { Text("Projects") } })
+
+        Row(
+            Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column {
+                Text("Evidence Mode", style = MaterialTheme.typography.titleMedium)
+                Text("Keep clean original; stamp on export", style = MaterialTheme.typography.bodySmall)
+            }
+            Switch(checked = evidenceMode, onCheckedChange = { evidenceMode = it })
+        }
+
+        if (evidenceMode) {
+            Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+                OutlinedTextField(
+                    value = asset,
+                    onValueChange = { asset = it },
+                    label = { Text("Asset / circuit") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+                Spacer(Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = note,
+                    onValueChange = { note = it },
+                    label = { Text("Evidence note") },
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 2
+                )
+                Spacer(Modifier.height(8.dp))
+            }
+        }
 
         AndroidView(modifier = Modifier.weight(1f).fillMaxWidth(), factory = { ctx ->
             val previewView = PreviewView(ctx)
@@ -83,11 +119,13 @@ private fun CameraScreen(project: String, onBack: () -> Unit) {
                 val file = storage.newPhotoFile(project)
                 val output = ImageCapture.OutputFileOptions.Builder(file).build()
                 capture.takePicture(output, ContextCompat.getMainExecutor(context), object : ImageCapture.OnImageSavedCallback {
-                    override fun onImageSaved(result: ImageCapture.OutputFileResults) { lastSaved = file.absolutePath }
+                    override fun onImageSaved(result: ImageCapture.OutputFileResults) {
+                        lastSaved = file.absolutePath
+                    }
                     override fun onError(exception: ImageCaptureException) = Unit
                 })
-            }) { Text("Capture") }
-            OutlinedButton(onClick = {}) { Text("Note") }
+            }) { Text(if (evidenceMode) "Capture Evidence" else "Capture") }
+            OutlinedButton(onClick = { note = "" }) { Text("Clear") }
         }
     }
 }
